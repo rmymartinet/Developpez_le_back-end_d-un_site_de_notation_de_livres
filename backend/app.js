@@ -1,5 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const bookRoutes = require('./routes/book');
 const userRoutes = require('./routes/user');
 const mongoSanitize = require('express-mongo-sanitize');
@@ -24,6 +23,7 @@ app.use((req, res, next) => {
     'GET, POST, PUT, DELETE, PATCH, OPTIONS'
   );
   res.setHeader('Cross-Origin-Resource-Policy', 'same-site');
+  next();
 });
 
 app.use(express.urlencoded({ extended: true })); //Permet de parser les requêtes envoyées par le client
