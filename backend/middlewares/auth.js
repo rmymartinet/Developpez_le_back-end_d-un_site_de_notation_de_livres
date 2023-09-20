@@ -9,7 +9,7 @@ module.exports = (req, res, next) => {
     const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
     //Récupération de l'userId
     const userId = decodedToken.userId;
-    //Vérification que l'userId correspond à celui de la requête
+
     req.auth = {
       userId: userId,
     };

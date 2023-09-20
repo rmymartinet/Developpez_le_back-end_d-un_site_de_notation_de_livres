@@ -1,17 +1,21 @@
 const express = require('express');
+const app = express();
+const path = require('path');
 const bookRoutes = require('./routes/book');
 const userRoutes = require('./routes/user');
 const mongoSanitize = require('express-mongo-sanitize');
-const path = require('path');
-const app = express();
+const helmet = require('helmet');
+const { appLimiter } = require('./middlewares/rateLimit');
 require('./db/mongo');
 require('dotenv').config();
 
-//Helmet permet de sécuriser les en-têtes HTTP
-const helmet = require('helmet');
+// Middleware de sécurité
 app.use(helmet());
 
-//middleware appliqué à toutes les routes
+// Middleware de taux de limite d'accès global
+app.use(appLimiter);
+
+// Middleware pour gérer les en-têtes CORS
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader(
@@ -26,20 +30,22 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.urlencoded({ extended: true })); //Permet de parser les requêtes envoyées par le client
+// Middleware pour analyser le corps de la requête
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-//Permet de remplacer les caractères interdits par des _ dans les requêtes envoyées à la base de données
+// Middleware pour servir les images statiques
 app.use(
   mongoSanitize({
     replaceWith: '_',
   })
 );
 
+//Routes
 app.use('/api/books', bookRoutes);
 app.use('/api/auth', userRoutes);
 
-//Permet de servir les images statiques contenues dans le dossier images
+// Middleware de gestion des erreurs
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 module.exports = app;

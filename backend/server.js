@@ -2,6 +2,7 @@ const http = require('http');
 const app = require('./app.js');
 require('dotenv').config();
 
+// Fonction pour normaliser le port
 const normalizePort = (val) => {
   const port = parseInt(val, 10);
 
@@ -13,9 +14,12 @@ const normalizePort = (val) => {
   }
   return false;
 };
+
+// Définition du port en utilisant la valeur de l'environnement ou 4000 par défaut
 const port = normalizePort(process.env.PORT || '4000');
 app.set('port', port);
 
+// Fonction de gestion des erreurs liées au serveur
 const errorHandler = (error) => {
   if (error.syscall !== 'listen') {
     throw error;
@@ -37,8 +41,10 @@ const errorHandler = (error) => {
   }
 };
 
+// Création du serveur HTTP en utilisant votre application Express
 const server = http.createServer(app);
 
+// Gestion des événements du serveur
 server.on('error', errorHandler);
 server.on('listening', () => {
   const address = server.address();
@@ -46,4 +52,5 @@ server.on('listening', () => {
   console.log('Listening on ' + bind);
 });
 
+// Ecoute du serveur sur le port spécifié
 server.listen(port);
