@@ -18,6 +18,7 @@
     "express-mongo-sanitize": "^2.2.0",
     "express-rate-limit": "^7.0.1",
     "helmet": "^7.0.0",
+    "joi": "^17.10.2",
     "jsonwebtoken": "^9.0.2",
     "limit": "^0.0.1",
     "mongo-sanitize": "^1.1.0",

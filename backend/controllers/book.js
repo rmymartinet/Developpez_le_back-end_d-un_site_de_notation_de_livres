@@ -106,10 +106,15 @@ exports.getBestRatedBooks = async (req, res, next) => {
   try {
     const books = await Book.find();
     books.sort((a, b) => b.averageRating - a.averageRating); // Trie les livres par note moyenne
-    const bestRatedBooks = books.slice(0, 3); // Récupère les 3 premiers livres
-    res.status(201).json(bestRatedBooks);
+
+    const bestRatedBooks = books.slice(0, 3).map((book) => ({
+      ...book.toObject(),
+      averageRating: parseFloat(book.averageRating.toFixed(1)),
+    })); // Récupère les 3 premiers livres
+
+    return res.status(201).json(bestRatedBooks);
   } catch (error) {
-    res.status(404).json({ error });
+    return res.status(404).json({ error });
   }
 };
 
@@ -122,9 +127,11 @@ exports.ratingBook = async (req, res, next) => {
 
     const userRating = req.body.rating;
 
-    //Vérifie que la note est entre 0 et 5
+    // Vérifie que la note est entre 0 et 5
     if (userRating < 0 || userRating > 5) {
-      res.status(400).json({ message: 'Rating must be between 0 and 5' });
+      return res
+        .status(400)
+        .json({ message: 'Rating must be between 0 and 5' });
     }
 
     if (!isAlreadyRated) {
@@ -139,13 +146,15 @@ exports.ratingBook = async (req, res, next) => {
           0
         ) / book.ratings.length;
 
+      newAverageRating = Math.round(newAverageRating); // Arrondi la note moyenne
+
       book.averageRating = newAverageRating;
       await book.save();
-      res.status(201).json(book);
+      return res.status(201).json(book);
     } else {
-      res.status(401).json({ message: 'Book already rated' });
+      return res.status(401).json({ message: 'Book already rated' });
     }
   } catch (error) {
-    res.status(500).json({ error });
+    return res.status(500).json({ error });
   }
 };
